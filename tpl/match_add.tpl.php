@@ -63,3 +63,150 @@ foreach ($object->fields as $key => $val) {
     print '</td>';
     print '</tr>';
 }
+
+function toto($value, $param,$keysuffix = '', $keyprefix = '', $key){ {
+
+    global $db, $conf, $langs;
+
+    $form = new Form($db);
+        
+    if (is_array($value)) {
+        $value_arr = $value;
+    } else {
+        $value_arr = explode(',', $value);
+    }
+
+    if (is_array($param['options'])) {
+            $param_list = array_keys($param['options']);
+            $InfoFieldList = explode(":", $param_list[0]);
+            $parentName = '';
+            $parentField = '';
+            // 0 : tableName
+            // 1 : label field name
+            // 2 : key fields name (if differ of rowid)
+            // 3 : key field parent (for dependent lists)
+            // 4 : where clause filter on column or table extrafield, syntax field='value' or extra.field=value
+            $keyList = (empty($InfoFieldList[2]) ? 'rowid' : $InfoFieldList[2] . ' as rowid');
+
+            if (count($InfoFieldList) > 3 && !empty($InfoFieldList[3])) {
+                list($parentName, $parentField) = explode('|', $InfoFieldList[3]);
+                $keyList .= ', ' . $parentField;
+            }
+            if (count($InfoFieldList) > 4 && !empty($InfoFieldList[4])) {
+                if (strpos($InfoFieldList[4], 'extra.') !== false) {
+                    $keyList = 'main.' . $InfoFieldList[2] . ' as rowid';
+                } else {
+                    $keyList = $InfoFieldList[2] . ' as rowid';
+                }
+            }
+
+            $fields_label = explode('|', $InfoFieldList[1]);
+            if (is_array($fields_label)) {
+                $keyList .= ', ';
+                $keyList .= implode(', ', $fields_label);
+            }
+
+            $sqlwhere = '';
+            $sql = 'SELECT ' . $keyList;
+            $sql .= ' FROM ' . MAIN_DB_PREFIX . $InfoFieldList[0];
+            if (!empty($InfoFieldList[4])) {
+                // can use SELECT request
+                if (strpos($InfoFieldList[4], '$SEL$') !== false) {
+                    $InfoFieldList[4] = str_replace('$SEL$', 'SELECT', $InfoFieldList[4]);
+                }
+
+                // current object id can be use into filter
+                if (strpos($InfoFieldList[4], '$ID$') !== false && !empty($objectid)) {
+                    $InfoFieldList[4] = str_replace('$ID$', $objectid, $InfoFieldList[4]);
+                } else {
+                    $InfoFieldList[4] = str_replace('$ID$', '0', $InfoFieldList[4]);
+                }
+
+                // We have to join on extrafield table
+                if (strpos($InfoFieldList[4], 'extra') !== false) {
+                    $sql .= ' as main, ' . MAIN_DB_PREFIX . $InfoFieldList[0] . '_extrafields as extra';
+                    $sqlwhere .= ' WHERE extra.fk_object=main.' . $InfoFieldList[2] . ' AND ' . $InfoFieldList[4];
+                } else {
+                    $sqlwhere .= ' WHERE ' . $InfoFieldList[4];
+                }
+            } else {
+                $sqlwhere .= ' WHERE 1=1';
+            }
+            // Some tables may have field, some other not. For the moment we disable it.
+            if (in_array($InfoFieldList[0], array('tablewithentity'))) {
+                $sqlwhere .= ' AND entity = ' . $conf->entity;
+            }
+            // $sql.=preg_replace('/^ AND /','',$sqlwhere);
+            // print $sql;
+
+            $sql .= $sqlwhere;
+            //dol_syslog(get_class($this) . '::showInputField type=chkbxlst', LOG_DEBUG);
+            $resql = $db->query($sql);
+            if ($resql) {
+                $num = $db->num_rows($resql);
+                $i = 0;
+
+                $data = array();
+
+                while ($i < $num) {
+                    $labeltoshow = '';
+                    $obj = $db->fetch_object($resql);
+
+                    $notrans = false;
+                    // Several field into label (eq table:code|libelle:rowid)
+                    $fields_label = explode('|', $InfoFieldList[1]);
+                    if (count($fields_label) > 1) {
+                        $notrans = true;
+                        foreach ($fields_label as $field_toshow) {
+                            $labeltoshow .= $obj->$field_toshow . ' ';
+                        }
+                    } else {
+                        $labeltoshow = $obj->{$InfoFieldList[1]};
+                    }
+                    $labeltoshow = dol_trunc($labeltoshow, 45);
+
+                    if (is_array($value_arr) && in_array($obj->rowid, $value_arr)) {
+                        foreach ($fields_label as $field_toshow) {
+                            $translabel = $langs->trans($obj->$field_toshow);
+                            if ($translabel != $obj->$field_toshow) {
+                                $labeltoshow = dol_trunc($translabel, 18) . ' ';
+                            } else {
+                                $labeltoshow = dol_trunc($obj->$field_toshow, 18) . ' ';
+                            }
+                        }
+
+                        $data[$obj->rowid] = $labeltoshow;
+                    } else {
+                        if (!$notrans) {
+                            $translabel = $langs->trans($obj->{$InfoFieldList[1]});
+                            if ($translabel != $obj->{$InfoFieldList[1]}) {
+                                $labeltoshow = dol_trunc($translabel, 18);
+                            } else {
+                                $labeltoshow = dol_trunc($obj->{$InfoFieldList[1]}, 18);
+                            }
+                        }
+                        if (empty($labeltoshow)) {
+                            $labeltoshow = '(not defined)';
+                        }
+
+                        if (is_array($value_arr) && in_array($obj->rowid, $value_arr)) {
+                            $data[$obj->rowid] = $labeltoshow;
+                        }
+
+                        if (!empty($InfoFieldList[3]) && $parentField) {
+                            $parent = $parentName . ':' . $obj->{$parentField};
+                        }
+
+                        $data[$obj->rowid] = $labeltoshow;
+                    }
+
+                    $i++;
+                }
+                $db->free($resql);
+
+                $out = $form->multiselectarray($keyprefix . $key . $keysuffix, $data, $value_arr, '', 0, '', 0, '100%');
+            } else {
+                print 'Error in request ' . $sql . ' ' . $db->lasterror() . '. Check setup of extra parameters.<br>';
+            }
+        }
+}
