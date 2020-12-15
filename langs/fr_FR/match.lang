@@ -16,7 +16,9 @@ ParamDesc=Une description si besoin
 ParamHelp=Le contenu de l'aide
 
 # MENU
-TopMenumatch=match
+TopMenumatch=Match
+LeftMenumatchCreate=Nouveau match
+LeftMenumatchList=Liste des matchs
 
 # STATUS
 matchStatusCanceled=Abandonnée (fermée)
