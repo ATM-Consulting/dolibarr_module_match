@@ -145,22 +145,21 @@ class modmatch extends DolibarrModules
         	$conf->match=new stdClass();
         	$conf->match->enabled=0;
         }
-		$this->dictionaries=array();
-        /* Example:
-        if (! isset($conf->match->enabled)) $conf->match->enabled=0;	// This is to avoid warnings
+		//$this->dictionaries=array();
+       	/* Example:*/
+        //if (! isset($conf->match->enabled)) $conf->match->enabled=0;	// This is to avoid warnings
         $this->dictionaries=array(
             'langs'=>'match@match',
-            'tabname'=>array(MAIN_DB_PREFIX."table1",MAIN_DB_PREFIX."table2",MAIN_DB_PREFIX."table3"),		// List of tables we want to see into dictonnary editor
-            'tablib'=>array("Table1","Table2","Table3"),													// Label of tables
-            'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table1 as f','SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table2 as f','SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table3 as f'),	// Request to select fields
-            'tabsqlsort'=>array("label ASC","label ASC","label ASC"),																					// Sort order
-            'tabfield'=>array("code,label","code,label","code,label"),																					// List of fields (result of select to show dictionary)
-            'tabfieldvalue'=>array("code,label","code,label","code,label"),																				// List of fields (list of fields to edit a record)
-            'tabfieldinsert'=>array("code,label","code,label","code,label"),																			// List of fields (list of fields for insert)
-            'tabrowid'=>array("rowid","rowid","rowid"),																									// Name of columns with primary key (try to always name it 'rowid')
-            'tabcond'=>array($conf->match->enabled,$conf->match->enabled,$conf->match->enabled)												// Condition to show each dictionary
+            'tabname'=>array(MAIN_DB_PREFIX. "c_dictdiscipline"),// List of tables we want to see into dictonnary editor
+            'tablib'=>array("Discipline"),// Label of tables
+            'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX. 'c_dictdiscipline as f'),	// Request to select fields
+            'tabsqlsort'=>array("label ASC"),// Sort order
+            'tabfield'=>array("code,label"),// List of fields (result of select to show dictionary)
+            'tabfieldvalue'=>array("code,label"),// List of fields (list of fields to edit a record)
+            'tabfieldinsert'=>array("code,label"),// List of fields (list of fields for insert)
+            'tabrowid'=>array("rowid"),// Name of columns with primary key (try to always name it 'rowid')
+            'tabcond'=>array($conf->match->enabled)// Condition to show each dictionary
         );
-        */
 
         // Boxes
 		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
@@ -302,13 +301,22 @@ class modmatch extends DolibarrModules
 	 */
 	public function init($options = '')
 	{
+		global $db;
 		$sql = array();
 		
 		define('INC_FROM_DOLIBARR', true);
 
 		require dol_buildpath('/match/script/create-maj-base.php');
 
-		$result=$this->_load_tables('/match/sql/');
+		$result = $this->_load_tables('/match/sql/');
+
+		require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+		$extrafield = new ExtraFields($db);
+		$extrafield->addExtraField('nbr_match', 'Nombre de matchs', 'int', '100', '10', 'user', 0, 0, '', array ('options' => array ('' => null)),1,'','1','','','','',1,1,'');
+		$extrafield->addExtraField('nbr_loose', 'Nombre de défaite', 'int', '100', '10', 'user', 0, 0, '', array('options' => array('' => null)), 1, '', '1', '', '', '', '', 1, 1, '');
+		$extrafield->addExtraField('nbr_win', 'Nombre de victoire', 'int', '100', '10', 'user', 0, 0, '', array('options' => array('' => null)), 1, '', '1', '', '', '', '', 1, 1, '');
+		$extrafield->addExtraField('nbr_goal', 'Nombre de buts', 'int', '100', '10', 'user', 0, 0, '', array('options' => array('' => null)), 1, '', '1', '', '', '', '', 1, 1, '');
+		$extrafield->addExtraField('ratio_win_loose', 'Ratio victoire/défaite', 'double', '100', '24,2', 'user', 0, 0, '', array('options' => array('' => null)), 1, '', '1', '', '', '', '', 1, 1, '');
 
 		return $this->_init($sql, $options);
 	}

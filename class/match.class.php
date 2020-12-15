@@ -105,7 +105,6 @@ class match extends SeedObject
             'label' => 'Entity',
             'enabled' => 1,
             'visible' => 0,
-            'default' => 1,
             'notnull' => 1,
             'index' => 1,
             'position' => 20
@@ -115,8 +114,7 @@ class match extends SeedObject
             'type' => 'date',
             'label' => 'Date',
             'enabled' => 1,
-            'visible' => 0,
-            'default' => 1,
+            'visible' => 1,
             'notnull' => 1,
             'index' => 1,
             'position' => 30
@@ -126,7 +124,7 @@ class match extends SeedObject
             'type' => 'integer',
             'label' => 'Status',
             'enabled' => 1,
-            'visible' => 0,
+            'visible' => 1,
             'notnull' => 1,
             'default' => 0,
             'index' => 1,
@@ -142,8 +140,7 @@ class match extends SeedObject
             'type' => 'chkbxlst:user:label:rowid::active=1',
             'label' => 'Team1',
             'enabled' => 1,
-            'visible' => 0,
-            'default' => 1,
+            'visible' => 1,
             'notnull' => 1,
             'index' => 1,
             'position' => 50
@@ -153,8 +150,7 @@ class match extends SeedObject
             'type' => 'chkbxlst:user:label:rowid::active=1',
             'label' => 'Team2',
             'enabled' => 1,
-            'visible' => 0,
-            'default' => 1,
+            'visible' => 1,
             'notnull' => 1,
             'index' => 1,
             'position' => 60
@@ -164,8 +160,7 @@ class match extends SeedObject
             'type' => 'integer',
             'label' => 'Score1',
             'enabled' => 1,
-            'visible' => 0,
-            'default' => 1,
+            'visible' => 1,
             'notnull' => 1,
             'index' => 1,
             'position' => 70
@@ -175,8 +170,7 @@ class match extends SeedObject
             'type' => 'integer',
             'label' => 'Score2',
             'enabled' => 1,
-            'visible' => 0,
-            'default' => 1,
+            'visible' => 1,
             'notnull' => 1,
             'index' => 1,
             'position' => 80
