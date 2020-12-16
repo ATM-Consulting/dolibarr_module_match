@@ -157,11 +157,12 @@ if (empty($reshook))
 			exit;
 
 		case 'modif':
+            if (!empty($user->rights->match->write)) $object->setValid($user);
+            break;
 		case 'reopen':
-			if (!empty($user->rights->match->write)) $object->setValid($user);
-
+            if (!empty($user->rights->match->write)) $object->setReopen($user);
 			break;
-		case 'confirm_validate':
+		case 'valid':
 			if (!empty($user->rights->match->write)) $object->setValid($user);
 
 			header('Location: '.dol_buildpath('/match/card.php', 1).'?id='.$object->id);
@@ -181,6 +182,7 @@ if (empty($reshook))
 
         case 'accept':
             $object->setAccepted($user);
+            
             header('Location: ' . dol_buildpath('/match/card.php', 1) . '?id=' . $object->id);
             exit;
 

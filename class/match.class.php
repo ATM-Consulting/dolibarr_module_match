@@ -184,6 +184,7 @@ class match extends SeedObject
             'visible' => 1,
             'notnull' => 0,
             'index' => 1,
+            'default' => '0',
             'position' => 70
         ),
 
@@ -194,19 +195,36 @@ class match extends SeedObject
             'visible' => 1,
             'notnull' => 0,
             'index' => 1,
+            'default' => '0',
             'position' => 80
         ),
 
-        'winner' => array(
-            'type' => 'varchar',
+        'winner_1' => array(
+            'type' => 'integer:User:user/class/user.class.php',
             'label' => 'Winner',
             'enabled' => 1,
             'visible' => 5,
             'position' => 90
         ),
 
-        'looser' => array(
-            'type' => 'varchar',
+        'winner_2' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'Winner',
+            'enabled' => 1,
+            'visible' => 5,
+            'position' => 90
+        ),
+
+        'looser_1' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'Looser',
+            'enabled' => 1,
+            'visible' => 5,
+            'position' => 100
+        ),
+
+        'looser_2' => array(
+            'type' => 'integer:User:user/class/user.class.php',
             'label' => 'Looser',
             'enabled' => 1,
             'visible' => 5,
@@ -259,13 +277,16 @@ class match extends SeedObject
     public $fk_user_2_2;
 
     /** @var string $label Object score1 */
-    public $score1;
+    public $score_1;
 
     /** @var string $description Object description */
-    public $score2;
+    public $score_2;
 
-    /** @var string $description Object description */
-    public $winner;
+    public $winner_1;
+    public $winner_2;
+
+    public $looser_1;
+    public $looser_2;
 
     /** @var string $description Object description */
     public $discipline;
@@ -307,6 +328,15 @@ class match extends SeedObject
         if ($this->fk_user_2_2 == '-1') {
             $this->fk_user_2_2 = null;
         }
+        if ($this->score_1 == 0) {
+            $this->score_1 = '0';
+        }
+        if ($this->score_2 == 0) {
+            $this->score_2 = '0';
+        }
+        if (empty($this->status)) {
+            $this->status = '0';
+        }
         foreach ($this->fields as $key => $value) {
             if($value['notnull'] == 1 && empty($this->{$key})){
                 setEventMessage($langs->trans('miss_required_field'), 'errors');
@@ -315,7 +345,7 @@ class match extends SeedObject
         }
         $res = $this->create($user);
         if (!empty($this->is_clone) || empty($this->ref)) {
-            $this->status = '0';
+            
             // TODO determinate if auto generate
             $this->ref = '(PROV' . $this->id . ')';
             $res = $this->update($user);
@@ -341,6 +371,8 @@ class match extends SeedObject
     public function delete(User &$user)
     {
         $this->deleteObjectLinked();
+        
+        $this->setReopen($user);
 
         unset($this->fk_element); // avoid conflict with standard Dolibarr comportment
         return parent::delete($user);
@@ -405,7 +437,7 @@ class match extends SeedObject
             $this->status = self::STATUS_VALIDATED;
             $this->withChild = false;
 
-            return $this->update($user);
+            return $this->save($user);
         }
 
         return 0;
@@ -417,33 +449,103 @@ class match extends SeedObject
      */
     public function setAccepted($user)
     {
+
         if ($this->status === self::STATUS_VALIDATED)
         {
+            //Set winner and looser
+            if ($this->score_1 > $this->score_2) {
+                $this->winner_1 = $this->fk_user_1_1;
+                $this->winner_2 = $this->fk_user_1_2;
+                $this->looser_1 = $this->fk_user_2_1;
+                $this->looser_2 = $this->fk_user_2_2;
+            } elseif ($this->score_2 > $this->score_1) {
+                $this->winner_1 = $this->fk_user_2_1;
+                $this->winner_2 = $this->fk_user_2_2;
+                $this->looser_1 = $this->fk_user_1_1;
+                $this->looser_2 = $this->fk_user_1_2;
+            }
+            $this->injectScoreToUserExtrafields($this->fk_user_1_1, $this->score_1);
+            $this->injectScoreToUserExtrafields($this->fk_user_1_2, $this->score_1);
+            $this->injectScoreToUserExtrafields($this->fk_user_2_1, $this->score_2);
+            $this->injectScoreToUserExtrafields($this->fk_user_2_2, $this->score_2);
+            
             $this->status = self::STATUS_FINISH;
             $this->withChild = false;
 
-            return $this->update($user);
+            return $this->save($user);
         }
 
         return 0;
     }
 
+    /**
+     * @param user_id  id utilisateur
+     * @return int
+     */
+    private function injectScoreToUserExtrafields($user_id, $score)
+    {
+        global $user;
+        $player = new User($this->db);
+        $player->fetch($user_id);
+        $player->array_options['options_nbr_match']++;
+        $player->array_options['options_nbr_goal'] += $score;
+        if($score == 10) {
+            $player->array_options['options_nbr_win']++;  
+        }
+        else {
+            $player->array_options['options_nbr_loose']++;
+        }
+        $player->array_options['options_ratio_win_loose'] = $player->array_options['options_nbr_win'] / $player->array_options['options_nbr_match'] * 100;
+        $player->update($user);
+    }
+
 
     /**
-     * @param User  $user   User object
+     * @param User $user User object
      * @return int
      */
     public function setReopen($user)
     {
         if ($this->status === self::STATUS_FINISH)
         {
+            $this->reverseScoreToUserExtrafields($this->fk_user_1_1, $this->score_1);
+            $this->reverseScoreToUserExtrafields($this->fk_user_1_2, $this->score_1);
+            $this->reverseScoreToUserExtrafields($this->fk_user_2_1, $this->score_2);
+            $this->reverseScoreToUserExtrafields($this->fk_user_2_2, $this->score_2);
+            
             $this->status = self::STATUS_VALIDATED;
             $this->withChild = false;
 
-            return $this->update($user);
+            return $this->save($user);
         }
 
         return 0;
+    }
+    /**
+     * @param user_id  id utilisateur
+     * @return int
+     */
+    private function reverseScoreToUserExtrafields($user_id, $score)
+    {
+        global $user;
+        $player = new User($this->db);
+        $player->fetch($user_id);
+        if(!empty($player)){
+            $player->array_options['options_nbr_match']--;
+            $player->array_options['options_nbr_goal'] -= $score;
+            if ($score == 10) {
+                $player->array_options['options_nbr_win']--;
+            } else {
+                $player->array_options['options_nbr_loose']--;
+            }
+            if($player->array_options['options_nbr_match'] == 0){
+                $player->array_options['options_ratio_win_loose'] = null;
+            }
+            else{
+                $player->array_options['options_ratio_win_loose'] = $player->array_options['options_nbr_win'] / $player->array_options['options_nbr_match'] * 100;
+            }
+            $player->update($user);
+        }
     }
 
 
@@ -466,7 +568,7 @@ class match extends SeedObject
         $linkend='</a>';
 
         $picto='generic';
-//        $picto='match@match';
+        //        $picto='match@match';
 
         if ($withpicto) $result.=($link.img_object($label, $picto, 'class="classfortooltip"').$linkend);
         if ($withpicto && $withpicto != 2) $result.=' ';
