@@ -91,8 +91,8 @@ class match extends SeedObject
             'length' => 50,
             'label' => 'Ref',
             'enabled' => 1,
-            'visible' => 1,
-            'notnull' => 1,
+            'visible' => 2,
+            'notnull' => 0,
             'showoncombobox' => 1,
             'index' => 1,
             'position' => 10,
@@ -105,7 +105,6 @@ class match extends SeedObject
             'label' => 'Entity',
             'enabled' => 1,
             'visible' => 0,
-            'notnull' => 1,
             'index' => 1,
             'position' => 20
         ),
@@ -116,6 +115,7 @@ class match extends SeedObject
             'enabled' => 1,
             'visible' => 1,
             'notnull' => 1,
+            'default' => null,
             'index' => 1,
             'position' => 30
         ),
@@ -124,9 +124,8 @@ class match extends SeedObject
             'type' => 'integer',
             'label' => 'Status',
             'enabled' => 1,
-            'visible' => 1,
-            'notnull' => 1,
-            'default' => 0,
+            'visible' => 0,
+            'default' => '0',
             'index' => 1,
             'position' => 40,
             'arrayofkeyval' => array(
@@ -136,66 +135,91 @@ class match extends SeedObject
             )
         ),
 
-        'team_1' => array(
-            'type' => 'chkbxlst:user:label:rowid::active=1',
-            'label' => 'Team1',
+        'fk_user_1_1' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'User1',
             'enabled' => 1,
             'visible' => 1,
             'notnull' => 1,
+            'default' => null,
             'index' => 1,
             'position' => 50
         ),
 
-        'team_2' => array(
-            'type' => 'chkbxlst:user:label:rowid::active=1',
-            'label' => 'Team2',
+        'fk_user_1_2' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'User2',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 0,
+            'index' => 1,
+            'position' => 51
+        ),
+
+        'fk_user_2_1' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'User3',
             'enabled' => 1,
             'visible' => 1,
             'notnull' => 1,
+            'default' => null,
             'index' => 1,
-            'position' => 60
+            'position' => 52
+        ),
+
+        'fk_user_2_2' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'User4',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 0,
+            'index' => 1,
+            'position' => 53
         ),
 
         'score_1' => array(
             'type' => 'integer',
-            'label' => 'Score1',
+            'label' => 'Score 1',
             'enabled' => 1,
             'visible' => 1,
-            'notnull' => 1,
+            'notnull' => 0,
             'index' => 1,
             'position' => 70
         ),
 
         'score_2' => array(
             'type' => 'integer',
-            'label' => 'Score2',
+            'label' => 'Score 2',
             'enabled' => 1,
             'visible' => 1,
-            'notnull' => 1,
+            'notnull' => 0,
             'index' => 1,
             'position' => 80
         ),
 
         'winner' => array(
-            'type' => 'chkbxlst:user:label:rowid::active=1',
+            'type' => 'varchar',
             'label' => 'Winner',
             'enabled' => 1,
-            'visible' => 1,
-            'position' => 70,
-            'searchall' => 1,
-            'css' => 'minwidth200',
-            'help' => 'Help text',
-            'showoncombobox' => 1
+            'visible' => 5,
+            'position' => 90
+        ),
+
+        'looser' => array(
+            'type' => 'varchar',
+            'label' => 'Looser',
+            'enabled' => 1,
+            'visible' => 5,
+            'position' => 100
         ),
 
         'fk_discipline' => array(
-            'type' => 'integer:DictDiscipline:match/class/dictdiscipline.class.php',
+            'type' => 'sellist:c_dictdiscipline:label:rowid::active=1',
             'label' => 'Discipline',
             'visible' => 1,
             'enabled' => 1,
-            'position' => 80,
-            'index' => 1,
-            'help' => 'LinkToThirparty'
+            'position' => 10,
+            'index' => 1
         ),
 
         'import_key' => array(
@@ -223,10 +247,16 @@ class match extends SeedObject
     public $status;
 
     /** @var int $status Object team1 */
-    public $team1;
+    public $fk_user_1_1;
 
     /** @var int $status Object team2 */
-    public $team2;
+    public $fk_user_1_2;
+
+    /** @var int $status Object team1 */
+    public $fk_user_2_1;
+
+    /** @var int $status Object team2 */
+    public $fk_user_2_2;
 
     /** @var string $label Object score1 */
     public $score1;
@@ -264,13 +294,33 @@ class match extends SeedObject
      */
     public function save($user)
     {
-        if (!empty($this->is_clone))
-        {
-            // TODO determinate if auto generate
-            $this->ref = '(PROV'.$this->id.')';
+        global $langs;
+        if ($this->fk_user_1_1 == '-1') {
+            $this->fk_user_1_1 = null;
         }
-
-        return $this->create($user);
+        if ($this->fk_user_2_1 == '-1') {
+            $this->fk_user_2_1 = null;
+        }
+        if ($this->fk_user_1_2 == '-1') {
+            $this->fk_user_1_2 = null;
+        }
+        if ($this->fk_user_2_2 == '-1') {
+            $this->fk_user_2_2 = null;
+        }
+        foreach ($this->fields as $key => $value) {
+            if($value['notnull'] == 1 && empty($this->{$key})){
+                setEventMessage($langs->trans('miss_required_field'), 'errors');
+                return -1;
+            }
+        }
+        $res = $this->create($user);
+        if (!empty($this->is_clone) || empty($this->ref)) {
+            $this->status = '0';
+            // TODO determinate if auto generate
+            $this->ref = '(PROV' . $this->id . ')';
+            $res = $this->update($user);
+        }
+        return $res;
     }
 
 
@@ -343,16 +393,15 @@ class match extends SeedObject
     }
 
     /**
-     * @param User  $user   User object
+     * @param User $user User object
      * @return int
      */
     public function setValid($user)
     {
-        if ($this->status === self::STATUS_DRAFT)
-        {
+        if ($this->status === self::STATUS_DRAFT || $this->status === self::STATUS_FINISH) {
             // TODO determinate if auto generate
-//            $this->ref = $this->getRef();
-//            $this->fk_user_valid = $user->id;
+            $this->ref = $this->getRef();
+            $this->fk_user_valid = $user->id;
             $this->status = self::STATUS_VALIDATED;
             $this->withChild = false;
 
@@ -379,22 +428,6 @@ class match extends SeedObject
         return 0;
     }
 
-    /**
-     * @param User  $user   User object
-     * @return int
-     */
-    public function setRefused($user)
-    {
-        if ($this->status === self::STATUS_VALIDATED)
-        {
-            $this->status = self::STATUS_REFUSED;
-            $this->withChild = false;
-
-            return $this->update($user);
-        }
-
-        return 0;
-    }
 
     /**
      * @param User  $user   User object
@@ -402,7 +435,7 @@ class match extends SeedObject
      */
     public function setReopen($user)
     {
-        if ($this->status === self::STATUS_FINISH || $this->status === self::STATUS_REFUSED)
+        if ($this->status === self::STATUS_FINISH)
         {
             $this->status = self::STATUS_VALIDATED;
             $this->withChild = false;
@@ -485,7 +518,6 @@ class match extends SeedObject
         if ($status==self::STATUS_CANCELED) { $statusType='status9'; $statusLabel=$langs->trans('matchStatusCancel'); $statusLabelShort=$langs->trans('matchStatusShortCancel'); }
         elseif ($status==self::STATUS_DRAFT) { $statusType='status0'; $statusLabel=$langs->trans('matchStatusDraft'); $statusLabelShort=$langs->trans('matchStatusShortDraft'); }
         elseif ($status==self::STATUS_VALIDATED) { $statusType='status1'; $statusLabel=$langs->trans('matchStatusValidated'); $statusLabelShort=$langs->trans('matchStatusShortValidate'); }
-        elseif ($status==self::STATUS_REFUSED) { $statusType='status5'; $statusLabel=$langs->trans('matchStatusRefused'); $statusLabelShort=$langs->trans('matchStatusShortRefused'); }
         elseif ($status==self::STATUS_FINISH) { $statusType='status6'; $statusLabel=$langs->trans('matchStatusAccepted'); $statusLabelShort=$langs->trans('matchStatusShortAccepted'); }
 
         if (function_exists('dolGetStatus'))
@@ -505,6 +537,21 @@ class match extends SeedObject
         
         return $res;
     }
+
+    /**
+     * @Overide
+     */
+   /* public function setValues(&$Tab)
+    {
+
+        foreach ($Tab as $key => &$value) {
+           if($key == '' && $value == '-1'){
+                $value = null;
+           }
+        }
+
+        return parent::setValues($Tab);
+    }*/
 }
 
 

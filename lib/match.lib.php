@@ -102,21 +102,21 @@ function getFormConfirmmatch($form, $object, $action)
         $body = $langs->trans('ConfirmValidatematchBody', $object->ref);
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ConfirmValidatematchTitle'), $body, 'confirm_validate', '', 0, 1);
     }
-    elseif ($action === 'accept' && !empty($user->rights->match->write))
+    /*elseif ($action === 'accept' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmAcceptmatchBody', $object->ref);
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ConfirmAcceptmatchTitle'), $body, 'confirm_accept', '', 0, 1);
-    }
+    }*/
     elseif ($action === 'refuse' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmRefusematchBody', $object->ref);
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ConfirmRefusematchTitle'), $body, 'confirm_refuse', '', 0, 1);
     }
-    elseif ($action === 'reopen' && !empty($user->rights->match->write))
+    /*elseif ($action === 'reopen' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmReopenmatchBody', $object->ref);
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ConfirmReopenmatchTitle'), $body, 'confirm_refuse', '', 0, 1);
-    }
+    }*/
     elseif ($action === 'delete' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmDeletematchBody');

@@ -21,17 +21,25 @@ LeftMenumatchCreate=Nouveau match
 LeftMenumatchList=Liste des matchs
 
 # STATUS
-matchStatusCanceled=Abandonnée (fermée)
+matchStatusCanceled=Abandonné (fermée)
 matchStatusDraft=Brouillon (à valider)
-matchStatusValidated=Validée (à accepter)
-matchStatusRefused=Refusée (fermée)
-matchStatusAccepted=Acceptée (fermée)
+matchStatusValidated=Validé (à accepter)
+matchStatusRefused=Refusé (fermée)
+matchStatusAccepted=Terminé (fermée)
 
-matchStatusShortCanceled=Abandonnée
+matchStatusShortCanceled=Abandonné
 matchStatusShortDraft=Brouillon
-matchStatusShortValidated=Validée
-matchStatusShortRefused=Refusée
-matchStatusShortAccepted=Acceptée
+matchStatusShortValidated=Validé
+matchStatusShortRefused=Refusé
+matchStatusShortAccepted=Accepté
+
+#FIELDS
+User1=Joueur 1 équipe 1
+User2=Joueur 2 équipe 1
+User3=Joueur 1 équipe 2
+User4=Joueur 2 équipe 2
+Winner=Gagnant
+Looser=Perdant
 
 # LIST
 matchList=Liste match
@@ -44,7 +52,7 @@ matchCard=Fiche match
 matchModify=Modifier
 matchClone=Cloner
 matchValid=Valider
-matchAccept=Accepter
+matchAccept=Terminer
 matchRefuse=Refuser
 matchReopen=Rouvrir
 matchCancel=Abandonner
@@ -55,3 +63,6 @@ ConfirmValidatematchBody=Souhaitez-vous vraiment activer cette fiche match %s ?
 
 ConfirmDeletematchTitle=Confirmation de suppression
 ConfirmDeletematchBody=Souhaitez-vous vraiment supprimer cette fiche match %s ?
+
+#ERROR MESSAGE
+miss_required_field=Champs requis manquants
