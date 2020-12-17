@@ -327,13 +327,12 @@ else
                 if (!empty($user->rights->match->write))
                 {
                     //var_dump($object->status);exit;
-                    if ($object->status !== match::STATUS_CANCELED)
-                    {
+                    
                         // Modify
                         if ($object->status !== match::STATUS_FINISH) print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=edit">'.$langs->trans("matchModify").'</a></div>'."\n";
                         // Clone
                        /* print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=clone">'.$langs->trans("matchClone").'</a></div>'."\n";*/
-                    }
+                    
 
                         // Valid
                         if ($object->status === match::STATUS_DRAFT) print '<div class="inline-block divButAction"><a class="butAction" href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&amp;action=valid">'.$langs->trans('matchValid').'</a></div>'."\n";
@@ -351,13 +350,12 @@ else
                 }
                 else
                 {
-                    if ($object->status !== match::STATUS_CANCELED)
-                    {
+                    
                         // Modify
                         if ($object->status !== match::STATUS_FINISH) print '<div class="inline-block divButAction"><a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans("matchModify").'</a></div>'."\n";
                         // Clone
                         /* print '<div class="inline-block divButAction"><a class="butAction" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans("matchClone").'</a></div>'."\n";*/
-                    }
+                    
 
                     // Valid
                     if ($object->status === match::STATUS_DRAFT) print '<div class="inline-block divButAction"><a class="butActionRefused" href="#" title="'.dol_escape_htmltag($langs->trans("NotEnoughPermissions")).'">'.$langs->trans('matchValid').'</a></div>'."\n";

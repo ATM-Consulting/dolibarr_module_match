@@ -28,10 +28,6 @@ if (!class_exists('SeedObject'))
 class match extends SeedObject
 {
     /**
-     * Canceled status
-     */
-    const STATUS_CANCELED = -1;
-    /**
      * Draft status
      */
     const STATUS_DRAFT = 0;
@@ -46,8 +42,7 @@ class match extends SeedObject
 
 	/** @var array $TStatus Array of translate key for each const */
 	public static $TStatus = array(
-		self::STATUS_CANCELED => 'matchStatusShortCanceled'
-		,self::STATUS_DRAFT => 'matchStatusShortDraft'
+		self::STATUS_DRAFT => 'matchStatusShortDraft'
 		,self::STATUS_VALIDATED => 'matchStatusShortValidated'
 		,self::STATUS_FINISH => 'matchStatusShortAccepted'
 	);
@@ -118,21 +113,6 @@ class match extends SeedObject
             'default' => null,
             'index' => 1,
             'position' => 30
-        ),
-
-        'status' => array(
-            'type' => 'integer',
-            'label' => 'Status',
-            'enabled' => 1,
-            'visible' => 0,
-            'default' => '0',
-            'index' => 1,
-            'position' => 40,
-            'arrayofkeyval' => array(
-                0 => 'Draft',
-                1 => 'Active',
-                -1 => 'Canceled'
-            )
         ),
 
         'fk_user_1_1' => array(
@@ -238,6 +218,21 @@ class match extends SeedObject
             'enabled' => 1,
             'position' => 10,
             'index' => 1
+        ),
+
+        'status' => array(
+            'type' => 'integer',
+            'label' => 'Status',
+            'enabled' => 1,
+            'visible' => 2,
+            'default' => '0',
+            'index' => 1,
+            'position' => 40,
+            'arrayofkeyval' => array(
+                0 => 'Draft',
+                1 => 'Active',
+                -1 => 'Canceled'
+            )
         ),
 
         'import_key' => array(
@@ -368,14 +363,14 @@ class match extends SeedObject
      * @param User $user User object
      * @return int
      */
-    public function delete(User &$user)
+    public function delete(User &$user, $notrigger = false)
     {
         $this->deleteObjectLinked();
         
         $this->setReopen($user);
 
         unset($this->fk_element); // avoid conflict with standard Dolibarr comportment
-        return parent::delete($user);
+        return parent::delete($user, $notrigger = false);
     }
 
     /**
@@ -617,8 +612,7 @@ class match extends SeedObject
 		$langs->load('match@match');
         $res = '';
 
-        if ($status==self::STATUS_CANCELED) { $statusType='status9'; $statusLabel=$langs->trans('matchStatusCancel'); $statusLabelShort=$langs->trans('matchStatusShortCancel'); }
-        elseif ($status==self::STATUS_DRAFT) { $statusType='status0'; $statusLabel=$langs->trans('matchStatusDraft'); $statusLabelShort=$langs->trans('matchStatusShortDraft'); }
+        if ($status==self::STATUS_DRAFT) { $statusType='status0'; $statusLabel=$langs->trans('matchStatusDraft'); $statusLabelShort=$langs->trans('matchStatusShortDraft'); }
         elseif ($status==self::STATUS_VALIDATED) { $statusType='status1'; $statusLabel=$langs->trans('matchStatusValidated'); $statusLabelShort=$langs->trans('matchStatusShortValidate'); }
         elseif ($status==self::STATUS_FINISH) { $statusType='status6'; $statusLabel=$langs->trans('matchStatusAccepted'); $statusLabelShort=$langs->trans('matchStatusShortAccepted'); }
 
