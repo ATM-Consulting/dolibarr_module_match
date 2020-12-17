@@ -22,7 +22,7 @@ dol_include_once('match/class/match.class.php');
 //var_dump($_REQUEST);exit;
 $listViewName = 'match';
 $inputPrefix = 'Listview_' . $listViewName . '_search_';
-if(empty($user->rights->match->read)) accessforbidden();
+if (empty($user->rights->match->read)) accessforbidden();
 
 $langs->load('abricot@abricot');
 $langs->load('match@match');
@@ -32,36 +32,42 @@ $massaction = GETPOST('massaction', 'alpha');
 $confirmmassaction = GETPOST('confirmmassaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
 
-$search_overshootMultiDiscipline = GETPOST($inputPrefix.'fk_discipline', 'int');
+$search_overshootMultiDiscipline = GETPOST($inputPrefix . 'fk_discipline', 'int');
 
-$operator_score_1 = substr(GETPOST($inputPrefix . 'score_1'),0,1);
-$operator_score_2 = substr(GETPOST($inputPrefix . 'score_2'),0,1);
+$operator_score_1 = substr(GETPOST($inputPrefix . 'score_1'), 0, 1);
+$operator_score_2 = substr(GETPOST($inputPrefix . 'score_2'), 0, 1);
+
+$clear_filter = GETPOST('button_removefilter_x');
+
+if (empty($clear_filter)) {
+	$player_all = GETPOST('player_all', 'int');
+	$winner_all = GETPOST('winner_all', 'int');
+	$looser_all = GETPOST('looser_all', 'int');
+}
+
 
 $object = new match($db);
 
 $hookmanager->initHooks(array('matchlist'));
 
-if ($object->isextrafieldmanaged)
-{
-    $extrafields = new ExtraFields($db);
-    $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
+if ($object->isextrafieldmanaged) {
+	$extrafields = new ExtraFields($db);
+	$extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
 }
 
 /*
  * Actions
  */
 
-$parameters=array();
-$reshook=$hookmanager->executeHooks('doActions', $parameters, $object);    // Note that $action and $object may have been modified by some hooks
+$parameters = array();
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object);    // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massaction != 'confirm_presend')
-{
-    $massaction = '';
+if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') {
+	$massaction = '';
 }
 
-if (empty($reshook))
-{
+if (empty($reshook)) {
 	// do action from GETPOST ...
 }
 
@@ -76,39 +82,51 @@ llxHeader('', $langs->trans('matchList'), '', '');
 
 // TODO ajouter les champs de son objet que l'on souhaite afficher
 $keys = array_keys($object->fields);
-$fieldList = 't.'.implode(', t.', $keys);
-if (!empty($object->isextrafieldmanaged))
-{
-    $keys = array_keys($extralabels);
-	if(!empty($keys)) {
+$fieldList = 't.' . implode(', t.', $keys);
+if (!empty($object->isextrafieldmanaged)) {
+	$keys = array_keys($extralabels);
+	if (!empty($keys)) {
 		$fieldList .= ', et.' . implode(', et.', $keys);
 	}
 }
 
-$sql = 'SELECT '.$fieldList;
+$sql = 'SELECT ' . $fieldList;
 
 // Add fields from hooks
-$parameters=array('sql' => $sql);
-$reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
+$parameters = array('sql' => $sql);
+$reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$sql .= $hookmanager->resPrint;
 
-$sql.= ' FROM '.MAIN_DB_PREFIX.'match t ';
+$sql .= ' FROM ' . MAIN_DB_PREFIX . 'match t ';
 
-if (!empty($object->isextrafieldmanaged))
-{
-    $sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'match_extrafields et ON (et.fk_object = t.rowid)';
+if (!empty($object->isextrafieldmanaged)) {
+	$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'match_extrafields et ON (et.fk_object = t.rowid)';
 }
-$sql.= ' WHERE 1=1';
+$sql .= ' WHERE 1=1';
 
 //$sql.= ' AND t.entity IN ('.getEntity('match', 1).')';
-if ($search_overshootMultiDiscipline > 0) $sql.= ' AND t.fk_discipline = '.$search_overshootMultiDiscipline;
+if ($search_overshootMultiDiscipline > 0) $sql .= ' AND t.fk_discipline = ' . $search_overshootMultiDiscipline;
 
+if (!empty($player_all) && $player_all != -1) 
+{
+	$sql .= ' AND (t.fk_user_1_1 = ' . $player_all . ' OR t . fk_user_1_2 = ' . $player_all . ' OR t.fk_user_2_1 = ' . $player_all . ' OR t.fk_user_2_2 = ' . $player_all . ')';
+}
+if (!empty($winner_all) && $winner_all != -1)
+{
+	$sql .= ' AND (t.winner_1 = ' . $winner_all . ' OR t . winner_2 = ' . $winner_all . ')';
+}
+if (!empty($looser_all) && $looser_all != -1) 
+{
+	$sql .= ' AND (t.looser_1 = ' . $looser_all . ' OR t . looser_2 = ' . $looser_all . ')';
+}
 // Add where from hooks
-$parameters=array('sql' => $sql);
-$reshook=$hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
-$sql.=$hookmanager->resPrint;
+$parameters = array('sql' => $sql);
+$reshook = $hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$sql .= $hookmanager->resPrint;
 
 $formcore = new TFormCore($_SERVER['PHP_SELF'], 'form_list_match', 'GET');
+
+dol_include_once('match/tpl/playerFilters.tpl.php');
 
 $nbLine = GETPOST('limit');
 if (empty($nbLine)) $nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
@@ -116,62 +134,41 @@ if (empty($nbLine)) $nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user
 // List configuration
 $listViewConfig = array(
 	'view_type' => 'list' // default = [list], [raw], [chart]
-	,'allow-fields-select' => true
-	,'limit'=>array(
+	, 'allow-fields-select' => true, 'limit' => array(
 		'nbLine' => $nbLine
-	)
-	,'list' => array(
-		'title' => $langs->trans('matchList')
-		,'image' => 'title_generic.png'
-		,'picto_precedent' => '<'
-		,'picto_suivant' => '>'
-		,'noheader' => 0
-		,'messageNothing' => $langs->trans('Nomatch')
-		,'picto_search' => img_picto('', 'search.png', '', 0)
-		,'massactions'=>array(
+	), 'list' => array(
+		'title' => $langs->trans('matchList'), 'image' => 'title_generic.png', 'picto_precedent' => '<', 'picto_suivant' => '>', 'noheader' => 0, 'messageNothing' => $langs->trans('Nomatch'), 'picto_search' => img_picto('', 'search.png', '', 0), 'massactions' => array(
 			'yourmassactioncode'  => $langs->trans('YourMassActionLabel')
-		)
-		,'param_url' => '&limit='.$nbLine
-	)
-	,'subQuery' => array()
-	,'link' => array()
-	,'type' => array(
+		), 'param_url' => '&limit=' . $nbLine
+	), 'subQuery' => array(), 'link' => array(), 'type' => array(
 		'date_creation' => 'date' // [datetime], [hour], [money], [number], [integer]
-		,'tms' => 'date'
-	)
-	,'search' => array(
+		, 'tms' => 'date'
+	), 'search' => array(
 		'date_creation' => array('search_type' => 'calendars', 'allow_is_null' => true)
-		,'tms' => array('search_type' => 'calendars', 'allow_is_null' => false)
-		,'ref' => array('search_type' => true, 'table' => 't', 'field' => 'ref')
-		,'label' => array('search_type' => true, 'table' => array('t', 't'), 'field' => array('label')) // input text de recherche sur plusieurs champs
-		,'match' => array('search_type' => match::$TStatus, 'to_translate' => true) // select html, la clé = le match de l'objet, 'to_translate' à true si nécessaire
-		,'fk_discipline' => array('search_type' => 'override','no-auto-sql-search' => 1, 'override' => $object->showInputField($object->fields['fk_discipline'], 'fk_discipline', $search_overshootMultiDiscipline, '', '', $inputPrefix))
-		,'score_1' => array('search_type' => true, 'table' => 't', 'field' => 'score_1')
-		,'score_2' => array('search_type' => true, 'table' => 't', 'field' => 'score_2')
-	)
-	,'operator' => array(
+		, 'tms' => array('search_type' => 'calendars', 'allow_is_null' => false)
+		, 'ref' => array('search_type' => true, 'table' => 't', 'field' => 'ref')
+		, 'label' => array('search_type' => true, 'table' => array('t', 't')
+		, 'field' => array('label')) // input text de recherche sur plusieurs champs
+		, 'match' => array('search_type' => match::$TStatus, 'to_translate' => true) // select html, la clé = le match de l'objet, 'to_translate' à true si nécessaire
+		, 'fk_discipline' => array('search_type' => 'override', 'no-auto-sql-search' => 1, 'override' => $object->showInputField($object->fields['fk_discipline'], 'fk_discipline', $search_overshootMultiDiscipline, '', '', $inputPrefix)), 'score_1' => array('search_type' => true, 'table' => 't', 'field' => 'score_1'), 'score_2' => array('search_type' => true, 'table' => 't', 'field' => 'score_2'), 'player_all' => array('search_type' => true), 'player_win' => array('search_type' => true), 'player_loose' => array('search_type' => true)
+	), 'operator' => array(
 		'score_1' => $operator_score_1
-		,'score_2' => $operator_score_2
-	)
-	,'translate' => array()
-	,'hide' => array(
+		, 'score_2' => $operator_score_2
+	), 'translate' => array(), 'hide' => array(
 		'rowid' // important : rowid doit exister dans la query sql pour les checkbox de massaction
-	)
-	,'title'=>array(
+	), 'title' => array(
 		'ref' => $langs->trans('Ref.')
-		,'label' => $langs->trans('Label')
-		,'date_creation' => $langs->trans('DateCre')
-		,'tms' => $langs->trans('DateMaj')
-		,'date' => $langs->trans('Date')
-		,'fk_discipline' => $langs->trans($object->fields['fk_discipline']['label'])
-	)
-	,'eval'=>array(
+		, 'label' => $langs->trans('Label')
+		, 'date_creation' => $langs->trans('DateCre')
+		, 'tms' => $langs->trans('DateMaj')
+		, 'date' => $langs->trans('Date')
+		, 'fk_discipline' => $langs->trans($object->fields['fk_discipline']['label'])
+	), 'eval' => array(
 		'ref' => '_getObjectNomUrl(\'@rowid@\', \'@val@\')'
-		,'date_creation' => '_getDate(\'@val@\')'
-		,'tms' => '_getDate(\'@val@\')'
-		,'fk_user' => '_getUserNomUrl(@val@)' // Si on a un fk_user dans notre requête
-	)
-	,'sortfield' => 'date', 'sortorder' => 'desc'
+		, 'date_creation' => '_getDate(\'@val@\')'
+		, 'tms' => '_getDate(\'@val@\')'
+		, 'fk_user' => '_getUserNomUrl(@val@)' // Si on a un fk_user dans notre requête
+	), 'sortfield' => 'date', 'sortorder' => 'desc'
 );
 
 foreach ($object->fields as $key => $field) {
@@ -189,18 +186,17 @@ foreach ($object->fields as $key => $field) {
 $r = new Listview($db, 'match');
 
 // Change view from hooks
-$parameters=array(  'listViewConfig' => $listViewConfig);
-$reshook=$hookmanager->executeHooks('listViewConfig',$parameters,$r);    // Note that $action and $object may have been modified by hook
+$parameters = array('listViewConfig' => $listViewConfig);
+$reshook = $hookmanager->executeHooks('listViewConfig', $parameters, $r);    // Note that $action and $object may have been modified by hook
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
-if ($reshook>0)
-{
+if ($reshook > 0) {
 	$listViewConfig = $hookmanager->resArray;
 }
 
 echo $r->render($sql, $listViewConfig);
 
-$parameters=array('sql'=>$sql);
-$reshook=$hookmanager->executeHooks('printFieldListFooter', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$parameters = array('sql' => $sql);
+$reshook = $hookmanager->executeHooks('printFieldListFooter', $parameters, $object);    // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 
 $formcore->end_form();
@@ -215,7 +211,7 @@ function _getObjectOutputField($key, $fk_match = 0, $val = '')
 		return 'error';
 	}
 
-	return $match->showOutputField($match->fields[$key],$key,$match->{$key});
+	return $match->showOutputField($match->fields[$key], $key, $match->{$key});
 }
 
 /**
@@ -227,8 +223,7 @@ function _getObjectNomUrl($id, $ref)
 
 	$o = new match($db);
 	$res = $o->fetch($id, false, $ref);
-	if ($res > 0)
-	{
+	if ($res > 0) {
 		return $o->getNomUrl(1);
 	}
 
@@ -243,8 +238,7 @@ function _getUserNomUrl($fk_user)
 	global $db;
 
 	$u = new User($db);
-	if ($u->fetch($fk_user) > 0)
-	{
+	if ($u->fetch($fk_user) > 0) {
 		return $u->getNomUrl(1);
 	}
 
