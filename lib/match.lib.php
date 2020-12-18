@@ -71,9 +71,14 @@ function match_prepare_head(match $object)
     global $langs, $conf;
     $h = 0;
     $head = array();
-    $head[$h][0] = dol_buildpath('/match/card.php', 1).'?id='.$object->id;
+    $head[$h][0] = dol_buildpath('/match/card.php', 1) . '?id=' . $object->id;
     $head[$h][1] = $langs->trans("matchCard");
     $head[$h][2] = 'card';
+    $h++;
+
+    $head[$h][0] = dol_buildpath('/match/document.php', 1) . '?id=' . $object->id;
+    $head[$h][1] = $langs->trans("matchDocument");
+    $head[$h][2] = 'document';
     $h++;
 	
 	// Show more tabs from modules
@@ -138,30 +143,30 @@ function getFormConfirmmatch($form, $object, $action)
 
 
 function calculRankPlayer($object){
-    $rank = 0;
+    $rank = array(0,'Non classé');
     //if(empty($object->array_options)){
         $object->fetch_optionals();
     //}
     //var_dump($object->array_options);
     if ($object->array_options['options_ratio_win_loose'] < 30) {
-        $rank = 1;
+        $rank = array(1, 'Bronze');
     } elseif ($object->array_options['options_ratio_win_loose'] < 40) {
-        $rank = 2;
+        $rank = array(2, 'Argent');
     } elseif ($object->array_options['options_ratio_win_loose'] < 50) {
-        $rank = 3;
+        $rank = array(3, 'Or');
     } elseif ($object->array_options['options_ratio_win_loose'] < 60) {
-        $rank = 4;
+        $rank = array(4, 'Platine');
     } elseif ($object->array_options['options_ratio_win_loose'] < 70) {
-        $rank = 5;
+        $rank = array(5, 'Diamant');
     } elseif ($object->array_options['options_ratio_win_loose'] < 80) {
-        $rank = 6;
+        $rank = array(6, 'Champion');
     } elseif ($object->array_options['options_ratio_win_loose'] < 90) {
-        $rank = 7;
+        $rank = array(7, 'Grand champion');
     } elseif ($object->array_options['options_ratio_win_loose'] <= 100) {
-        $rank = 8;
+        $rank = array(8, 'Légende');
     }
     if ($object->array_options['options_nbr_match'] < 10) {
-        $rank = 0;
+        $rank = array(0, 'Non classé');
     }
     return $rank;
 }

@@ -75,7 +75,7 @@ class Actionsmatch
 		if (in_array('userdao', explode(':', $parameters['context']))) {
 			$rank = calculRankPlayer($object);
 			if ($rank != 0) {
-				$myvalue = '<img valign="middle" src="' . dol_buildpath('/match/img/rang_' . $rank . '.png', 1) . '" width="20px"/>';
+				$myvalue = '&nbsp;&nbsp;<img valign="middle" src="' . dol_buildpath('/match/img/rang_' . $rank[0] . '.png', 1) . '" title="Rang: '. $rank[1].'" width="30px"/>';
 			}
 			// do something only for the context 'somecontext'
 		}
@@ -95,7 +95,7 @@ class Actionsmatch
 		if (in_array('usercard', explode(':', $parameters['context']))) {
 			$rank = calculRankPlayer($object);
 			if ($rank != 0) {
-				print '<div><img id="img_rank_user" src="' . dol_buildpath('/match/img/rang_' . $rank . '.png', 1) . '" style="width:35px;vertical-align:middle"/></div>';
+				print '<div><img id="img_rank_user" src="' . dol_buildpath('/match/img/rang_' . $rank[0] . '.png', 1) . '" title="Rang: ' . $rank[1] . '" style="width:50px;vertical-align:middle"/></div>';
 ?>
 				<script type="text/javascript">
 					$(document).ready(function() {
