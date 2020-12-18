@@ -160,8 +160,8 @@ function calculRankPlayer($object){
     } elseif ($object->array_options['options_ratio_win_loose'] <= 100) {
         $rank = 8;
     }
-    /*if ($object->array_options['options_nbr_match'] < 10) {
+    if ($object->array_options['options_nbr_match'] < 10) {
         $rank = 0;
-    }*/
+    }
     return $rank;
 }
