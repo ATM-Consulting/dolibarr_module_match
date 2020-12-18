@@ -28,10 +28,6 @@ if (!class_exists('SeedObject'))
 class match extends SeedObject
 {
     /**
-     * Canceled status
-     */
-    const STATUS_CANCELED = -1;
-    /**
      * Draft status
      */
     const STATUS_DRAFT = 0;
@@ -40,21 +36,15 @@ class match extends SeedObject
 	 */
 	const STATUS_VALIDATED = 1;
 	/**
-	 * Refused status
-	 */
-	const STATUS_REFUSED = 3;
-	/**
 	 * Accepted status
 	 */
-	const STATUS_ACCEPTED = 4;
+	const STATUS_FINISH = 2;
 
 	/** @var array $TStatus Array of translate key for each const */
 	public static $TStatus = array(
-		self::STATUS_CANCELED => 'matchStatusShortCanceled'
-		,self::STATUS_DRAFT => 'matchStatusShortDraft'
+		self::STATUS_DRAFT => 'matchStatusShortDraft'
 		,self::STATUS_VALIDATED => 'matchStatusShortValidated'
-//		,self::STATUS_REFUSED => 'matchStatusShortRefused'
-//		,self::STATUS_ACCEPTED => 'matchStatusShortAccepted'
+		,self::STATUS_FINISH => 'matchStatusShortAccepted'
 	);
 
 	/** @var string $table_element Table name in SQL */
@@ -96,8 +86,8 @@ class match extends SeedObject
             'length' => 50,
             'label' => 'Ref',
             'enabled' => 1,
-            'visible' => 1,
-            'notnull' => 1,
+            'visible' => 2,
+            'notnull' => 0,
             'showoncombobox' => 1,
             'index' => 1,
             'position' => 10,
@@ -110,65 +100,140 @@ class match extends SeedObject
             'label' => 'Entity',
             'enabled' => 1,
             'visible' => 0,
-            'default' => 1,
-            'notnull' => 1,
             'index' => 1,
             'position' => 20
+        ),
+
+        'date' => array(
+            'type' => 'date',
+            'label' => 'Date',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 1,
+            'default' => null,
+            'index' => 1,
+            'position' => 30
+        ),
+
+        'fk_user_1_1' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'User1',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 1,
+            'default' => null,
+            'index' => 1,
+            'position' => 50
+        ),
+
+        'fk_user_1_2' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'User2',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 0,
+            'index' => 1,
+            'position' => 51
+        ),
+
+        'fk_user_2_1' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'User3',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 1,
+            'default' => null,
+            'index' => 1,
+            'position' => 52
+        ),
+
+        'fk_user_2_2' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'User4',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 0,
+            'index' => 1,
+            'position' => 53
+        ),
+
+        'score_1' => array(
+            'type' => 'integer',
+            'label' => 'Score 1',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 0,
+            'index' => 1,
+            'default' => '0',
+            'position' => 70
+        ),
+
+        'score_2' => array(
+            'type' => 'integer',
+            'label' => 'Score 2',
+            'enabled' => 1,
+            'visible' => 1,
+            'notnull' => 0,
+            'index' => 1,
+            'default' => '0',
+            'position' => 80
+        ),
+
+        'winner_1' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'Winner',
+            'enabled' => 1,
+            'visible' => 5,
+            'position' => 90
+        ),
+
+        'winner_2' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'Winner',
+            'enabled' => 1,
+            'visible' => 5,
+            'position' => 90
+        ),
+
+        'looser_1' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'Looser',
+            'enabled' => 1,
+            'visible' => 5,
+            'position' => 100
+        ),
+
+        'looser_2' => array(
+            'type' => 'integer:User:user/class/user.class.php',
+            'label' => 'Looser',
+            'enabled' => 1,
+            'visible' => 5,
+            'position' => 100
+        ),
+
+        'fk_discipline' => array(
+            'type' => 'sellist:c_dictdiscipline:label:rowid::active=1',
+            'label' => 'Discipline',
+            'visible' => 1,
+            'enabled' => 1,
+            'position' => 10,
+            'index' => 1
         ),
 
         'status' => array(
             'type' => 'integer',
             'label' => 'Status',
             'enabled' => 1,
-            'visible' => 0,
-            'notnull' => 1,
-            'default' => 0,
+            'visible' => 2,
+            'default' => '0',
             'index' => 1,
-            'position' => 30,
+            'position' => 40,
             'arrayofkeyval' => array(
                 0 => 'Draft',
                 1 => 'Active',
                 -1 => 'Canceled'
             )
         ),
-
-        'label' => array(
-            'type' => 'varchar(255)',
-            'label' => 'Label',
-            'enabled' => 1,
-            'visible' => 1,
-            'position' => 40,
-            'searchall' => 1,
-            'css' => 'minwidth200',
-            'help' => 'Help text',
-            'showoncombobox' => 1
-        ),
-
-        'fk_soc' => array(
-            'type' => 'integer:Societe:societe/class/societe.class.php',
-            'label' => 'ThirdParty',
-            'visible' => 1,
-            'enabled' => 1,
-            'position' => 50,
-            'index' => 1,
-            'help' => 'LinkToThirparty'
-        ),
-
-        'description' => array(
-            'type' => 'text', // or html for WYSWYG
-            'label' => 'Description',
-            'enabled' => 1,
-            'visible' => -1, //  un bug sur la version 9.0 de Dolibarr necessite de mettre -1 pour ne pas apparaitre sur les listes au lieu de la valeur 3
-            'position' => 60
-        ),
-
-//        'fk_user_valid' =>array(
-//            'type' => 'integer',
-//            'label' => 'UserValidation',
-//            'enabled' => 1,
-//            'visible' => -1,
-//            'position' => 512
-//        ),
 
         'import_key' => array(
             'type' => 'varchar(14)',
@@ -188,14 +253,38 @@ class match extends SeedObject
     /** @var int $entity Object entity */
 	public $entity;
 
-	/** @var int $status Object status */
-	public $status;
+    /** @var int $status Object date */
+    public $date;
+    
+    /** @var int $status Object status */
+    public $status;
 
-    /** @var string $label Object label */
-    public $label;
+    /** @var int $status Object team1 */
+    public $fk_user_1_1;
+
+    /** @var int $status Object team2 */
+    public $fk_user_1_2;
+
+    /** @var int $status Object team1 */
+    public $fk_user_2_1;
+
+    /** @var int $status Object team2 */
+    public $fk_user_2_2;
+
+    /** @var string $label Object score1 */
+    public $score_1;
 
     /** @var string $description Object description */
-    public $description;
+    public $score_2;
+
+    public $winner_1;
+    public $winner_2;
+
+    public $looser_1;
+    public $looser_2;
+
+    /** @var string $description Object description */
+    public $discipline;
 
 
 
@@ -221,13 +310,42 @@ class match extends SeedObject
      */
     public function save($user)
     {
-        if (!empty($this->is_clone))
-        {
-            // TODO determinate if auto generate
-            $this->ref = '(PROV'.$this->id.')';
+        global $langs;
+        if ($this->fk_user_1_1 == '-1') {
+            $this->fk_user_1_1 = null;
         }
-
-        return $this->create($user);
+        if ($this->fk_user_2_1 == '-1') {
+            $this->fk_user_2_1 = null;
+        }
+        if ($this->fk_user_1_2 == '-1') {
+            $this->fk_user_1_2 = null;
+        }
+        if ($this->fk_user_2_2 == '-1') {
+            $this->fk_user_2_2 = null;
+        }
+        if ($this->score_1 == 0) {
+            $this->score_1 = '0';
+        }
+        if ($this->score_2 == 0) {
+            $this->score_2 = '0';
+        }
+        if (empty($this->status)) {
+            $this->status = '0';
+        }
+        foreach ($this->fields as $key => $value) {
+            if($value['notnull'] == 1 && empty($this->{$key})){
+                setEventMessage($langs->trans('miss_required_field'), 'errors');
+                return -1;
+            }
+        }
+        $res = $this->create($user);
+        if (!empty($this->is_clone) || empty($this->ref)) {
+            
+            // TODO determinate if auto generate
+            $this->ref = '(PROV' . $this->id . ')';
+            $res = $this->update($user);
+        }
+        return $res;
     }
 
 
@@ -245,12 +363,14 @@ class match extends SeedObject
      * @param User $user User object
      * @return int
      */
-    public function delete(User &$user)
+    public function delete(User &$user, $notrigger = false)
     {
         $this->deleteObjectLinked();
+        
+        $this->setReopen($user);
 
         unset($this->fk_element); // avoid conflict with standard Dolibarr comportment
-        return parent::delete($user);
+        return parent::delete($user, $notrigger = false);
     }
 
     /**
@@ -300,20 +420,19 @@ class match extends SeedObject
     }
 
     /**
-     * @param User  $user   User object
+     * @param User $user User object
      * @return int
      */
     public function setValid($user)
     {
-        if ($this->status === self::STATUS_DRAFT)
-        {
+        if ($this->status === self::STATUS_DRAFT || $this->status === self::STATUS_FINISH) {
             // TODO determinate if auto generate
-//            $this->ref = $this->getRef();
-//            $this->fk_user_valid = $user->id;
+            $this->ref = $this->getRef();
+            $this->fk_user_valid = $user->id;
             $this->status = self::STATUS_VALIDATED;
             $this->withChild = false;
 
-            return $this->update($user);
+            return $this->save($user);
         }
 
         return 0;
@@ -325,49 +444,103 @@ class match extends SeedObject
      */
     public function setAccepted($user)
     {
+
         if ($this->status === self::STATUS_VALIDATED)
         {
-            $this->status = self::STATUS_ACCEPTED;
+            //Set winner and looser
+            if ($this->score_1 > $this->score_2) {
+                $this->winner_1 = $this->fk_user_1_1;
+                $this->winner_2 = $this->fk_user_1_2;
+                $this->looser_1 = $this->fk_user_2_1;
+                $this->looser_2 = $this->fk_user_2_2;
+            } elseif ($this->score_2 > $this->score_1) {
+                $this->winner_1 = $this->fk_user_2_1;
+                $this->winner_2 = $this->fk_user_2_2;
+                $this->looser_1 = $this->fk_user_1_1;
+                $this->looser_2 = $this->fk_user_1_2;
+            }
+            $this->injectScoreToUserExtrafields($this->fk_user_1_1, $this->score_1);
+            $this->injectScoreToUserExtrafields($this->fk_user_1_2, $this->score_1);
+            $this->injectScoreToUserExtrafields($this->fk_user_2_1, $this->score_2);
+            $this->injectScoreToUserExtrafields($this->fk_user_2_2, $this->score_2);
+            
+            $this->status = self::STATUS_FINISH;
             $this->withChild = false;
 
-            return $this->update($user);
+            return $this->save($user);
         }
 
         return 0;
     }
 
     /**
-     * @param User  $user   User object
+     * @param user_id  id utilisateur
      * @return int
      */
-    public function setRefused($user)
+    private function injectScoreToUserExtrafields($user_id, $score)
     {
-        if ($this->status === self::STATUS_VALIDATED)
-        {
-            $this->status = self::STATUS_REFUSED;
-            $this->withChild = false;
-
-            return $this->update($user);
+        global $user;
+        $player = new User($this->db);
+        $player->fetch($user_id);
+        $player->array_options['options_nbr_match']++;
+        $player->array_options['options_nbr_goal'] += $score;
+        if($score == 10) {
+            $player->array_options['options_nbr_win']++;  
         }
-
-        return 0;
+        else {
+            $player->array_options['options_nbr_loose']++;
+        }
+        $player->array_options['options_ratio_win_loose'] = $player->array_options['options_nbr_win'] / $player->array_options['options_nbr_match'] * 100;
+        $player->update($user);
     }
 
+
     /**
-     * @param User  $user   User object
+     * @param User $user User object
      * @return int
      */
     public function setReopen($user)
     {
-        if ($this->status === self::STATUS_ACCEPTED || $this->status === self::STATUS_REFUSED)
+        if ($this->status === self::STATUS_FINISH)
         {
+            $this->reverseScoreToUserExtrafields($this->fk_user_1_1, $this->score_1);
+            $this->reverseScoreToUserExtrafields($this->fk_user_1_2, $this->score_1);
+            $this->reverseScoreToUserExtrafields($this->fk_user_2_1, $this->score_2);
+            $this->reverseScoreToUserExtrafields($this->fk_user_2_2, $this->score_2);
+            
             $this->status = self::STATUS_VALIDATED;
             $this->withChild = false;
 
-            return $this->update($user);
+            return $this->save($user);
         }
 
         return 0;
+    }
+    /**
+     * @param user_id  id utilisateur
+     * @return int
+     */
+    private function reverseScoreToUserExtrafields($user_id, $score)
+    {
+        global $user;
+        $player = new User($this->db);
+        $player->fetch($user_id);
+        if(!empty($player)){
+            $player->array_options['options_nbr_match']--;
+            $player->array_options['options_nbr_goal'] -= $score;
+            if ($score == 10) {
+                $player->array_options['options_nbr_win']--;
+            } else {
+                $player->array_options['options_nbr_loose']--;
+            }
+            if($player->array_options['options_nbr_match'] == 0){
+                $player->array_options['options_ratio_win_loose'] = null;
+            }
+            else{
+                $player->array_options['options_ratio_win_loose'] = $player->array_options['options_nbr_win'] / $player->array_options['options_nbr_match'] * 100;
+            }
+            $player->update($user);
+        }
     }
 
 
@@ -390,7 +563,7 @@ class match extends SeedObject
         $linkend='</a>';
 
         $picto='generic';
-//        $picto='match@match';
+        //        $picto='match@match';
 
         if ($withpicto) $result.=($link.img_object($label, $picto, 'class="classfortooltip"').$linkend);
         if ($withpicto && $withpicto != 2) $result.=' ';
@@ -439,11 +612,9 @@ class match extends SeedObject
 		$langs->load('match@match');
         $res = '';
 
-        if ($status==self::STATUS_CANCELED) { $statusType='status9'; $statusLabel=$langs->trans('matchStatusCancel'); $statusLabelShort=$langs->trans('matchStatusShortCancel'); }
-        elseif ($status==self::STATUS_DRAFT) { $statusType='status0'; $statusLabel=$langs->trans('matchStatusDraft'); $statusLabelShort=$langs->trans('matchStatusShortDraft'); }
+        if ($status==self::STATUS_DRAFT) { $statusType='status0'; $statusLabel=$langs->trans('matchStatusDraft'); $statusLabelShort=$langs->trans('matchStatusShortDraft'); }
         elseif ($status==self::STATUS_VALIDATED) { $statusType='status1'; $statusLabel=$langs->trans('matchStatusValidated'); $statusLabelShort=$langs->trans('matchStatusShortValidate'); }
-        elseif ($status==self::STATUS_REFUSED) { $statusType='status5'; $statusLabel=$langs->trans('matchStatusRefused'); $statusLabelShort=$langs->trans('matchStatusShortRefused'); }
-        elseif ($status==self::STATUS_ACCEPTED) { $statusType='status6'; $statusLabel=$langs->trans('matchStatusAccepted'); $statusLabelShort=$langs->trans('matchStatusShortAccepted'); }
+        elseif ($status==self::STATUS_FINISH) { $statusType='status6'; $statusLabel=$langs->trans('matchStatusAccepted'); $statusLabelShort=$langs->trans('matchStatusShortAccepted'); }
 
         if (function_exists('dolGetStatus'))
         {
@@ -462,6 +633,21 @@ class match extends SeedObject
         
         return $res;
     }
+
+    /**
+     * @Overide
+     */
+   /* public function setValues(&$Tab)
+    {
+
+        foreach ($Tab as $key => &$value) {
+           if($key == '' && $value == '-1'){
+                $value = null;
+           }
+        }
+
+        return parent::setValues($Tab);
+    }*/
 }
 
 

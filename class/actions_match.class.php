@@ -22,15 +22,17 @@
  *          Put some comments here
  */
 
+dol_include_once('match/lib/match.lib.php');
+
 /**
  * Class Actionsmatch
  */
 class Actionsmatch
 {
-    /**
-     * @var DoliDb		Database handler (result of a new DoliDB)
-     */
-    public $db;
+	/**
+	 * @var DoliDb		Database handler (result of a new DoliDB)
+	 */
+	public $db;
 
 	/**
 	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
@@ -49,7 +51,7 @@ class Actionsmatch
 
 	/**
 	 * Constructor
-     * @param DoliDB    $db    Database connector
+	 * @param DoliDB    $db    Database connector
 	 */
 	public function __construct($db)
 	{
@@ -65,30 +67,45 @@ class Actionsmatch
 	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
-	public function doActions($parameters, &$object, &$action, $hookmanager)
+	public function getNomUrl($parameters, &$object, &$action, $hookmanager)
 	{
 		$error = 0; // Error counter
-		$myvalue = 'test'; // A result value
+		$myvalue = ''; // A result value
 
-		print_r($parameters);
-		echo "action: " . $action;
-		print_r($object);
-
-		if (in_array('somecontext', explode(':', $parameters['context'])))
-		{
-		  // do something only for the context 'somecontext'
+		if (in_array('userdao', explode(':', $parameters['context']))) {
+			$rank = calculRankPlayer($object);
+			if ($rank != 0) {
+				$myvalue = '&nbsp;&nbsp;<img valign="middle" src="' . dol_buildpath('/match/img/rang_' . $rank[0] . '.png', 1) . '" title="Rang: '. $rank[1].'" width="30px"/>';
+			}
+			// do something only for the context 'somecontext'
 		}
 
-		if (! $error)
-		{
+		if (!$error) {
 			$this->results = array('myreturn' => $myvalue);
-			$this->resprints = 'A text to show';
+			$this->resprints = $myvalue;
 			return 0; // or return 1 to replace standard code
-		}
-		else
-		{
+		} else {
 			$this->errors[] = 'Error message';
 			return -1;
+		}
+	}
+
+	public function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager)
+	{
+		if (in_array('usercard', explode(':', $parameters['context']))) {
+			$rank = calculRankPlayer($object);
+			if ($rank != 0) {
+				print '<div><img id="img_rank_user" src="' . dol_buildpath('/match/img/rang_' . $rank[0] . '.png', 1) . '" title="Rang: ' . $rank[1] . '" style="width:50px;vertical-align:middle"/></div>';
+?>
+				<script type="text/javascript">
+					$(document).ready(function() {
+						$divImg = $("#img_rank_user");
+						$(".arearef .statusref").prepend($divImg)
+					})
+				</script>
+<?php
+			}
+			// do something only for the context 'somecontext'
 		}
 	}
 }

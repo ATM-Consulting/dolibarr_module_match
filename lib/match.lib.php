@@ -71,9 +71,14 @@ function match_prepare_head(match $object)
     global $langs, $conf;
     $h = 0;
     $head = array();
-    $head[$h][0] = dol_buildpath('/match/card.php', 1).'?id='.$object->id;
+    $head[$h][0] = dol_buildpath('/match/card.php', 1) . '?id=' . $object->id;
     $head[$h][1] = $langs->trans("matchCard");
     $head[$h][2] = 'card';
+    $h++;
+
+    $head[$h][0] = dol_buildpath('/match/document.php', 1) . '?id=' . $object->id;
+    $head[$h][1] = $langs->trans("matchDocument");
+    $head[$h][2] = 'document';
     $h++;
 	
 	// Show more tabs from modules
@@ -97,26 +102,26 @@ function getFormConfirmmatch($form, $object, $action)
 
     $formconfirm = '';
 
-    if ($action === 'valid' && !empty($user->rights->match->write))
+    /*if ($action === 'valid' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmValidatematchBody', $object->ref);
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ConfirmValidatematchTitle'), $body, 'confirm_validate', '', 0, 1);
-    }
-    elseif ($action === 'accept' && !empty($user->rights->match->write))
+    }*/
+    /*elseif ($action === 'accept' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmAcceptmatchBody', $object->ref);
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ConfirmAcceptmatchTitle'), $body, 'confirm_accept', '', 0, 1);
-    }
-    elseif ($action === 'refuse' && !empty($user->rights->match->write))
+    }*/
+    if ($action === 'refuse' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmRefusematchBody', $object->ref);
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ConfirmRefusematchTitle'), $body, 'confirm_refuse', '', 0, 1);
     }
-    elseif ($action === 'reopen' && !empty($user->rights->match->write))
+    /*elseif ($action === 'reopen' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmReopenmatchBody', $object->ref);
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ConfirmReopenmatchTitle'), $body, 'confirm_refuse', '', 0, 1);
-    }
+    }*/
     elseif ($action === 'delete' && !empty($user->rights->match->write))
     {
         $body = $langs->trans('ConfirmDeletematchBody');
@@ -134,4 +139,34 @@ function getFormConfirmmatch($form, $object, $action)
     }
 
     return $formconfirm;
+}
+
+
+function calculRankPlayer($object){
+    $rank = array(0,'Non classé');
+    //if(empty($object->array_options)){
+        $object->fetch_optionals();
+    //}
+    //var_dump($object->array_options);
+    if ($object->array_options['options_ratio_win_loose'] < 30) {
+        $rank = array(1, 'Bronze');
+    } elseif ($object->array_options['options_ratio_win_loose'] < 40) {
+        $rank = array(2, 'Argent');
+    } elseif ($object->array_options['options_ratio_win_loose'] < 50) {
+        $rank = array(3, 'Or');
+    } elseif ($object->array_options['options_ratio_win_loose'] < 60) {
+        $rank = array(4, 'Platine');
+    } elseif ($object->array_options['options_ratio_win_loose'] < 70) {
+        $rank = array(5, 'Diamant');
+    } elseif ($object->array_options['options_ratio_win_loose'] < 80) {
+        $rank = array(6, 'Champion');
+    } elseif ($object->array_options['options_ratio_win_loose'] < 90) {
+        $rank = array(7, 'Grand champion');
+    } elseif ($object->array_options['options_ratio_win_loose'] <= 100) {
+        $rank = array(8, 'Légende');
+    }
+    if ($object->array_options['options_nbr_match'] < 10) {
+        $rank = array(0, 'Non classé');
+    }
+    return $rank;
 }

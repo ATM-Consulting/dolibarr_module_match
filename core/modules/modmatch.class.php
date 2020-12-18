@@ -88,7 +88,10 @@ class modmatch extends DolibarrModules
 		//							'dir' => array('output' => 'othermodulename'),      // To force the default directories names
 		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@match')) // Set here all workflow context managed by module
 		//                        );
-		$this->module_parts = array();
+		$this->module_parts = array(
+			'triggers' => 1,
+			'hooks' => array('userdao', 'usercard')
+		);
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/match/temp");
@@ -145,22 +148,21 @@ class modmatch extends DolibarrModules
         	$conf->match=new stdClass();
         	$conf->match->enabled=0;
         }
-		$this->dictionaries=array();
-        /* Example:
-        if (! isset($conf->match->enabled)) $conf->match->enabled=0;	// This is to avoid warnings
+		//$this->dictionaries=array();
+       	/* Example:*/
+        //if (! isset($conf->match->enabled)) $conf->match->enabled=0;	// This is to avoid warnings
         $this->dictionaries=array(
             'langs'=>'match@match',
-            'tabname'=>array(MAIN_DB_PREFIX."table1",MAIN_DB_PREFIX."table2",MAIN_DB_PREFIX."table3"),		// List of tables we want to see into dictonnary editor
-            'tablib'=>array("Table1","Table2","Table3"),													// Label of tables
-            'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table1 as f','SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table2 as f','SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table3 as f'),	// Request to select fields
-            'tabsqlsort'=>array("label ASC","label ASC","label ASC"),																					// Sort order
-            'tabfield'=>array("code,label","code,label","code,label"),																					// List of fields (result of select to show dictionary)
-            'tabfieldvalue'=>array("code,label","code,label","code,label"),																				// List of fields (list of fields to edit a record)
-            'tabfieldinsert'=>array("code,label","code,label","code,label"),																			// List of fields (list of fields for insert)
-            'tabrowid'=>array("rowid","rowid","rowid"),																									// Name of columns with primary key (try to always name it 'rowid')
-            'tabcond'=>array($conf->match->enabled,$conf->match->enabled,$conf->match->enabled)												// Condition to show each dictionary
+            'tabname'=>array(MAIN_DB_PREFIX. "c_dictdiscipline"),// List of tables we want to see into dictonnary editor
+            'tablib'=>array("Discipline"),// Label of tables
+            'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX. 'c_dictdiscipline as f'),	// Request to select fields
+            'tabsqlsort'=>array("label ASC"),// Sort order
+            'tabfield'=>array("code,label"),// List of fields (result of select to show dictionary)
+            'tabfieldvalue'=>array("code,label"),// List of fields (list of fields to edit a record)
+            'tabfieldinsert'=>array("code,label"),// List of fields (list of fields for insert)
+            'tabrowid'=>array("rowid"),// Name of columns with primary key (try to always name it 'rowid')
+            'tabcond'=>array($conf->match->enabled)// Condition to show each dictionary
         );
-        */
 
         // Boxes
 		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
@@ -174,72 +176,40 @@ class modmatch extends DolibarrModules
 
 		// Add here list of permission defined by an id, a label, a boolean and two constant strings.
 		// Example:
-		// $this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
-		// $this->rights[$r][1] = 'Permision label';	// Permission label
-		// $this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		// $this->rights[$r][4] = 'level1';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-		// $this->rights[$r][5] = 'level2';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-		// $r++;
-/*
+		/* $this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
+		 $this->rights[$r][1] = 'Permision label';	// Permission label
+		 $this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
+		 $this->rights[$r][4] = 'level1';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		 $this->rights[$r][5] = 'level2';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		 $r++;*/
+
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'match_read';	// Permission label
+		$this->rights[$r][1] = 'Lire les matchs';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'read';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$this->rights[$r][5] = '';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
 		
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'match_write';	// Permission label
+		$this->rights[$r][1] = 'Créer/modifier les matchs';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'write';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$this->rights[$r][5] = '';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
 
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'match_delete';	// Permission label
+		$this->rights[$r][1] = 'Supprimer les matchs';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'delete';		    // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$this->rights[$r][5] = '';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
-*/
+
 
 		// Main menu entries
 		$this->menu = array();			// List of menus to add
 		$r=0;
 
 		// Add here entries to declare new menus
-		//
-		// Example to declare a new Top Menu entry and its Left menu entry:
-		// $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=match',		// Put 0 if this is a single top menu or keep fk_mainmenu to give an entry on left
-		//							'type'=>'top',			                // This is a Top menu entry
-		//							'titre'=>'match top menu',
-		//							'mainmenu'=>'match',
-		//							'leftmenu'=>'match_left',			// This is the name of left menu for the next entries
-		//							'url'=>'/match/pagetop.php',
-		//							'langs'=>'match@match',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-		//							'position'=>100,
-		//							'enabled'=>'$conf->match->enabled',	// Define condition to show or hide menu entry. Use '$conf->match->enabled' if entry must be visible if module is enabled.
-		//							'perms'=>'1',			                // Use 'perms'=>'$user->rights->match->level1->level2' if you want your menu with a permission rules
-		//							'target'=>'',
-		//							'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-		// $r++;
-		//
-		// Example to declare a Left Menu entry into an existing Top menu entry:
-		// $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=match,fk_leftmenu=match_left',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-		//							'type'=>'left',			                // This is a Left menu entry
-		//							'titre'=>'match left menu',
-		//							'mainmenu'=>'match',
-		//							'leftmenu'=>'match_left',			// Goes into left menu previously created by the mainmenu
-		//							'url'=>'/match/pagelevel2.php',
-		//							'langs'=>'match@match',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-		//							'position'=>100,
-		//							'enabled'=>'$conf->match->enabled',  // Define condition to show or hide menu entry. Use '$conf->match->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-		//							'perms'=>'1',			                // Use 'perms'=>'$user->rights->match->level1->level2' if you want your menu with a permission rules
-		//							'target'=>'',
-		//							'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-		// $r++;
-		
-/*
 		$this->menu[$r]=array(
 			'fk_menu'=>0,			                // Put 0 if this is a top menu
 			'type'=>'top',			                // This is a Top menu entry
@@ -304,7 +274,7 @@ class modmatch extends DolibarrModules
 			'user'=>0
 		);				                // 0=Menu for internal users, 1=external users, 2=both
 		$r++;
-*/
+
 		
 		// Exports
 		$r=1;
@@ -334,13 +304,22 @@ class modmatch extends DolibarrModules
 	 */
 	public function init($options = '')
 	{
+		global $db;
 		$sql = array();
 		
 		define('INC_FROM_DOLIBARR', true);
 
 		require dol_buildpath('/match/script/create-maj-base.php');
 
-		$result=$this->_load_tables('/match/sql/');
+		$result = $this->_load_tables('/match/sql/');
+
+		require_once(DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php');
+		$extrafield = new ExtraFields($db);
+		$extrafield->addExtraField('nbr_match', 'Nombre de matchs', 'int', '100', '10', 'user', 0, 0, '', array ('options' => array ('' => null)),1,'','1','','','','',1,1,'');
+		$extrafield->addExtraField('nbr_loose', 'Nombre de défaite', 'int', '100', '10', 'user', 0, 0, '', array('options' => array('' => null)), 1, '', '1', '', '', '', '', 1, 1, '');
+		$extrafield->addExtraField('nbr_win', 'Nombre de victoire', 'int', '100', '10', 'user', 0, 0, '', array('options' => array('' => null)), 1, '', '1', '', '', '', '', 1, 1, '');
+		$extrafield->addExtraField('nbr_goal', 'Nombre de buts', 'int', '100', '10', 'user', 0, 0, '', array('options' => array('' => null)), 1, '', '1', '', '', '', '', 1, 1, '');
+		$extrafield->addExtraField('ratio_win_loose', 'Ratio victoire/défaite', 'double', '100', '24,2', 'user', 0, 0, '', array('options' => array('' => null)), 1, '', '1', '', '', '', '', 1, 1, '');
 
 		return $this->_init($sql, $options);
 	}
