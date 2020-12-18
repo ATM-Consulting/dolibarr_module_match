@@ -22,6 +22,8 @@
  *          Put some comments here
  */
 
+dol_include_once('match/lib/match.lib.php');
+
 /**
  * Class Actionsmatch
  */
@@ -65,24 +67,22 @@ class Actionsmatch
 	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
-	public function doActions($parameters, &$object, &$action, $hookmanager)
+	public function getNomUrl($parameters, &$object, &$action, $hookmanager)
 	{
 		$error = 0; // Error counter
-		$myvalue = 'test'; // A result value
+		$myvalue = ''; // A result value
 
-		print_r($parameters);
-		echo "action: " . $action;
-		print_r($object);
-
-		if (in_array('somecontext', explode(':', $parameters['context'])))
+		if (in_array('userdao', explode(':', $parameters['context'])))
 		{
+			$rank = calculRankPlayer($object);
+			$myvalue = '<img src="img/rang_'.$rank.'.png" width="35"/>';
 		  // do something only for the context 'somecontext'
 		}
 
 		if (! $error)
 		{
 			$this->results = array('myreturn' => $myvalue);
-			$this->resprints = 'A text to show';
+			$this->resprints = $myvalue;
 			return 0; // or return 1 to replace standard code
 		}
 		else

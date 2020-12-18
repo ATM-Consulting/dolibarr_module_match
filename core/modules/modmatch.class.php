@@ -90,7 +90,7 @@ class modmatch extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'triggers' => 1,
-			'hooks' => array('hookcontext1','hookcontext2')
+			'hooks' => array('userdao')
 		);
 
 		// Data directories to create when module is enabled.

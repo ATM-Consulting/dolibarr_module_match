@@ -135,3 +135,30 @@ function getFormConfirmmatch($form, $object, $action)
 
     return $formconfirm;
 }
+
+
+function calculRankPlayer($object){
+    $rank = 0;
+    //var_dump($object->array_options);exit;
+    if ($object->array_options->options_ratio_win_loose < 30) {
+        $rank = 1;
+    } elseif ($object->array_options->options_ratio_win_loose < 40) {
+        $rank = 2;
+    } elseif ($object->array_options->options_ratio_win_loose < 50) {
+        $rank = 3;
+    } elseif ($object->array_options->options_ratio_win_loose < 60) {
+        $rank = 4;
+    } elseif ($object->array_options->options_ratio_win_loose < 70) {
+        $rank = 5;
+    } elseif ($object->array_options->options_ratio_win_loose < 80) {
+        $rank = 6;
+    } elseif ($object->array_options->options_ratio_win_loose < 90) {
+        $rank = 7;
+    } elseif ($object->array_options->options_ratio_win_loose <= 100) {
+        $rank = 8;
+    }
+    if ($object->array_options->options_nbr_match < 10) {
+        $rank = 0;
+    }
+    return $rank;
+}
