@@ -137,9 +137,15 @@ $listViewConfig = array(
 	, 'allow-fields-select' => true, 'limit' => array(
 		'nbLine' => $nbLine
 	), 'list' => array(
-		'title' => $langs->trans('matchList'), 'image' => 'title_generic.png', 'picto_precedent' => '<', 'picto_suivant' => '>', 'noheader' => 0, 'messageNothing' => $langs->trans('Nomatch'), 'picto_search' => img_picto('', 'search.png', '', 0), 'massactions' => array(
-			'yourmassactioncode'  => $langs->trans('YourMassActionLabel')
-		), 'param_url' => '&limit=' . $nbLine
+		'title' => $langs->trans('matchList')
+		, 'image' => 'title_generic.png'
+		, 'picto_precedent' => '<'
+		, 'picto_suivant' => '>'
+		, 'noheader' => 0
+		, 'messageNothing' => $langs->trans('Nomatch')
+		, 'picto_search' => img_picto('', 'search.png', '', 0)
+		, 'massactions' => array('yourmassactioncode'  => $langs->trans('YourMassActionLabel'))
+		, 'param_url' => '&limit=' . $nbLine . '&player_all=' . $player_all . '&winner_all=' . $winner_all . '&looser_all=' . $looser_all
 	), 'subQuery' => array(), 'link' => array(), 'type' => array(
 		'date_creation' => 'date' // [datetime], [hour], [money], [number], [integer]
 		, 'tms' => 'date'
@@ -147,10 +153,11 @@ $listViewConfig = array(
 		'date_creation' => array('search_type' => 'calendars', 'allow_is_null' => true)
 		, 'tms' => array('search_type' => 'calendars', 'allow_is_null' => false)
 		, 'ref' => array('search_type' => true, 'table' => 't', 'field' => 'ref')
-		, 'label' => array('search_type' => true, 'table' => array('t', 't')
-		, 'field' => array('label')) // input text de recherche sur plusieurs champs
+		, 'label' => array('search_type' => true, 'table' => array('t', 't'), 'field' => 'label')// input text de recherche sur plusieurs champs
 		, 'match' => array('search_type' => match::$TStatus, 'to_translate' => true) // select html, la clé = le match de l'objet, 'to_translate' à true si nécessaire
-		, 'fk_discipline' => array('search_type' => 'override', 'no-auto-sql-search' => 1, 'override' => $object->showInputField($object->fields['fk_discipline'], 'fk_discipline', $search_overshootMultiDiscipline, '', '', $inputPrefix)), 'score_1' => array('search_type' => true, 'table' => 't', 'field' => 'score_1'), 'score_2' => array('search_type' => true, 'table' => 't', 'field' => 'score_2'), 'player_all' => array('search_type' => true), 'player_win' => array('search_type' => true), 'player_loose' => array('search_type' => true)
+		, 'fk_discipline' => array('search_type' => 'override', 'no-auto-sql-search' => 1, 'override' => $object->showInputField($object->fields['fk_discipline'], 'fk_discipline', $search_overshootMultiDiscipline, '', '', $inputPrefix))
+		, 'score_1' => array('search_type' => true, 'table' => 't', 'field' => 'score_1')
+		, 'score_2' => array('search_type' => true, 'table' => 't', 'field' => 'score_2')
 	), 'operator' => array(
 		'score_1' => $operator_score_1
 		, 'score_2' => $operator_score_2

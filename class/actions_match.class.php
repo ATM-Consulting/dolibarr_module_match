@@ -29,10 +29,10 @@ dol_include_once('match/lib/match.lib.php');
  */
 class Actionsmatch
 {
-    /**
-     * @var DoliDb		Database handler (result of a new DoliDB)
-     */
-    public $db;
+	/**
+	 * @var DoliDb		Database handler (result of a new DoliDB)
+	 */
+	public $db;
 
 	/**
 	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
@@ -51,7 +51,7 @@ class Actionsmatch
 
 	/**
 	 * Constructor
-     * @param DoliDB    $db    Database connector
+	 * @param DoliDB    $db    Database connector
 	 */
 	public function __construct($db)
 	{
@@ -72,23 +72,40 @@ class Actionsmatch
 		$error = 0; // Error counter
 		$myvalue = ''; // A result value
 
-		if (in_array('userdao', explode(':', $parameters['context'])))
-		{
+		if (in_array('userdao', explode(':', $parameters['context']))) {
 			$rank = calculRankPlayer($object);
-			$myvalue = '<img src="img/rang_'.$rank.'.png" width="35"/>';
-		  // do something only for the context 'somecontext'
+			if ($rank != 0) {
+				$myvalue = '<img valign="middle" src="' . dol_buildpath('/match/img/rang_' . $rank . '.png', 1) . '" width="20px"/>';
+			}
+			// do something only for the context 'somecontext'
 		}
 
-		if (! $error)
-		{
+		if (!$error) {
 			$this->results = array('myreturn' => $myvalue);
 			$this->resprints = $myvalue;
 			return 0; // or return 1 to replace standard code
-		}
-		else
-		{
+		} else {
 			$this->errors[] = 'Error message';
 			return -1;
+		}
+	}
+
+	public function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager)
+	{
+		if (in_array('usercard', explode(':', $parameters['context']))) {
+			$rank = calculRankPlayer($object);
+			if ($rank != 0) {
+				print '<div><img id="img_rank_user" src="' . dol_buildpath('/match/img/rang_' . $rank . '.png', 1) . '" style="width:35px;vertical-align:middle"/></div>';
+?>
+				<script type="text/javascript">
+					$(document).ready(function() {
+						$divImg = $("#img_rank_user");
+						$(".arearef .statusref").prepend($divImg)
+					})
+				</script>
+<?php
+			}
+			// do something only for the context 'somecontext'
 		}
 	}
 }

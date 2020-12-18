@@ -155,9 +155,12 @@ class Interfacematchtrigger
         } elseif ($action == 'USER_MODIFY') {
             // Empecher un user de modifier ses stats de match
             $oldMatchVal = $object->oldcopy->array_options;
-            $object->array_options = $oldMatchVal;
-
-            $object->update($user,1);
+            //var_dump($object);exit;
+            if (array_diff($oldMatchVal, $object->array_options)){
+                setEventMessage('Tricheur, on ne modifie pas son score !', 'warnings');
+                $object->array_options = $oldMatchVal;
+                $object->update($user, 1);
+            }
             dol_syslog(
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
