@@ -48,6 +48,7 @@ Nomatch=(vide)
 # CARD
 Newmatch=Création match
 matchCard=Fiche match
+matchDocument=Fichers joints
 
 matchModify=Modifier
 matchClone=Cloner

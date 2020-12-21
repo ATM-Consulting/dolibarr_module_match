@@ -95,7 +95,7 @@ class Actionsmatch
 		if (in_array('usercard', explode(':', $parameters['context']))) {
 			$rank = calculRankPlayer($object);
 			if ($rank != 0) {
-				print '<div><img id="img_rank_user" src="' . dol_buildpath('/match/img/rang_' . $rank[0] . '.png', 1) . '" title="Rang: ' . $rank[1] . '" style="width:50px;vertical-align:middle"/></div>';
+				print '<div><img id="img_rank_user" src="' . dol_buildpath('/match/img/rang_' . $rank[0] . '.png', 1) . '" title="Rang: ' . $rank[1] . '" style="width:30px;vertical-align:middle"/></div>';
 ?>
 				<script type="text/javascript">
 					$(document).ready(function() {
