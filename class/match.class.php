@@ -116,7 +116,7 @@ class match extends SeedObject
         ),
 
         'fk_user_1_1' => array(
-            'type' => 'integer:User:user/class/user.class.php',
+            'type' => 'integer:User:user/class/user.class.php:1:statut=1',
             'label' => 'User1',
             'enabled' => 1,
             'visible' => 1,
@@ -127,7 +127,7 @@ class match extends SeedObject
         ),
 
         'fk_user_1_2' => array(
-            'type' => 'integer:User:user/class/user.class.php',
+            'type' => 'integer:User:user/class/user.class.php:1:statut=1',
             'label' => 'User2',
             'enabled' => 1,
             'visible' => 1,
@@ -137,7 +137,7 @@ class match extends SeedObject
         ),
 
         'fk_user_2_1' => array(
-            'type' => 'integer:User:user/class/user.class.php',
+            'type' => 'integer:User:user/class/user.class.php:1:statut=1',
             'label' => 'User3',
             'enabled' => 1,
             'visible' => 1,
@@ -148,7 +148,7 @@ class match extends SeedObject
         ),
 
         'fk_user_2_2' => array(
-            'type' => 'integer:User:user/class/user.class.php',
+            'type' => 'integer:User:user/class/user.class.php:1:statut=1',
             'label' => 'User4',
             'enabled' => 1,
             'visible' => 1,
@@ -180,7 +180,7 @@ class match extends SeedObject
         ),
 
         'winner_1' => array(
-            'type' => 'integer:User:user/class/user.class.php',
+            'type' => 'integer:User:user/class/user.class.php:1:statut=1',
             'label' => 'Winner',
             'enabled' => 1,
             'visible' => 5,
@@ -188,7 +188,7 @@ class match extends SeedObject
         ),
 
         'winner_2' => array(
-            'type' => 'integer:User:user/class/user.class.php',
+            'type' => 'integer:User:user/class/user.class.php:1:statut=1',
             'label' => 'Winner',
             'enabled' => 1,
             'visible' => 5,
@@ -196,7 +196,7 @@ class match extends SeedObject
         ),
 
         'looser_1' => array(
-            'type' => 'integer:User:user/class/user.class.php',
+            'type' => 'integer:User:user/class/user.class.php:1:statut=1',
             'label' => 'Looser',
             'enabled' => 1,
             'visible' => 5,
@@ -204,7 +204,7 @@ class match extends SeedObject
         ),
 
         'looser_2' => array(
-            'type' => 'integer:User:user/class/user.class.php',
+            'type' => 'integer:User:user/class/user.class.php:1:statut=1',
             'label' => 'Looser',
             'enabled' => 1,
             'visible' => 5,
