@@ -72,7 +72,7 @@ class Actionsmatch
 		$error = 0; // Error counter
 		$myvalue = ''; // A result value
 
-		if (in_array('userdao', explode(':', $parameters['context']))) {
+		if (in_array('userdao', explode(':', $parameters['context']))&&$object->element == 'user') {
 			$rank = calculRankPlayer($object);
 			if ($rank != 0) {
 				$myvalue = '&nbsp;&nbsp;<img valign="middle" src="' . dol_buildpath('/match/img/rang_' . $rank[0] . '.png', 1) . '" title="Rang: '. $rank[1].'" width="30px"/>';
